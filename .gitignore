@@ -1,3 +1,6 @@
+# Exclude all sensitive keys from git repo
+private/*
+
 # Local .terraform directories
 **/.terraform/*
 
