@@ -1,0 +1,36 @@
+# Service targeting gitlab instances
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-hw-metrics
+  labels:
+    release: prometheus-operator-stable
+    app: go-hw 
+spec:
+  ports:
+  - name: service
+    port: 3000 
+    targetPort: 3000
+    protocol: TCP
+  selector:
+    app: go-hw 
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: go-hw
+  namespace: default
+  labels:
+    release: prometheus-operator-stable
+    app: go-hw
+spec:
+  selector:
+    matchLabels:
+      app: go-hw
+  endpoints:
+      - path: /metrics
+        port: service
+        interval: 15s        
+  namespaceSelector:
+    matchNames:
+        - default

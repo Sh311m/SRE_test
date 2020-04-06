@@ -6,10 +6,11 @@ data "local_file" "grafana_pwd" { #TODO change to k8s secret
     filename = "${path.module}/../private/grafana_admin"
 }
 
-resource "helm_release" "prometheus-operator" {
+resource "helm_release" "prometheus-operator" { #TODO move to monitoring namespace and configure routing
     name = "prometheus-operator-stable"
     chart = "stable/prometheus-operator"
-    
+    namespace = "default"
+
     values = [
         "${file("values.yaml")}"
     ]

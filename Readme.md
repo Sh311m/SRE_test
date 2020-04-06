@@ -37,14 +37,7 @@ How to use this repository:
     * manually cofigure dns records for domain and subdomains #TODO via terraform gcp `google_dns_record_set`
 6. Deploy monitoring:
     * create monitoring namespace
-    * deploy prometheus operator via helm with set of options
-```
-grafana.defaultDashboardsEnabled=false
-grafana.grafana.ini=<grafana_config.ini> (with anonymouse reader access and disabled sign in page)
-prometheus.service.type=NodePort
-alertmanager.service.type=NodePort
-grafana.service.type=NodePort
-```
+    * deploy prometheus operator via helm with values.yaml for grafana
 7. Deploy ingress-controller:
     * set variables with domain and subdomains (grafana, prometheus, alert manager)
     * deploy controller for web app and grafana (traffic routes, certs by cert-manager for all domains)
