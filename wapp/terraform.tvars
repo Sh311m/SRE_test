@@ -1,0 +1,2 @@
+wapp_gcr = "eu.gcr.io/k8s-hw-273220"
+wapp_image_name = "go-hw"
