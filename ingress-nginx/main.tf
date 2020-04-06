@@ -27,6 +27,7 @@ resource "kubernetes_namespace" "cert-manager" {
         name = "cert-manager"
     }
 }
+
 resource "helm_release" "nginx-ingress" {
     name  = "nginx-ingress-r3"
     repository = data.helm_repository.nginx-stable.metadata[0].name
@@ -36,7 +37,7 @@ resource "helm_release" "nginx-ingress" {
 resource "helm_release" "cert-manager" {
     name  = "cert-manager"
     repository = data.helm_repository.jetstack.metadata[0].name
-    namespace = "${kubernetes_namespace.cert-manager.metadata[0].name}"
+    namespace = kubernetes_namespace.cert-manager.metadata[0].name
     version = "v0.14.1"
     chart = "jetstack/cert-manager"
 }
