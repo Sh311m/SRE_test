@@ -7,6 +7,9 @@ data "local_file" "news_api_key" { #TODO change to k8s secret
 resource "kubernetes_service" "web_app" {
   metadata {
     name = var.wapp_image_name
+    labels = {
+      app = var.wapp_image_name
+    }
   }
   spec {
     selector = {
@@ -47,13 +50,13 @@ resource "kubernetes_deployment" "web_app_dep" {
             container {
               image = "${var.wapp_gcr}/${var.wapp_image_name}:latest"
               name  = var.wapp_image_name
-
+              image_pull_policy = "Always"
               port {
                 container_port = 3000
               }
               env {
                 name = "API_KEY"
-                value = "${data.local_file.news_api_key.content}"
+                value = data.local_file.news_api_key.content
               }
               resources {
                   limits {
