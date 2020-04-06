@@ -1,20 +1,8 @@
 provider "kubernetes" {}
 
-data "local_file" "news_api_key" {
+data "local_file" "news_api_key" { #TODO change to k8s secret 
   filename = "${path.module}/../private/.news_api_key"
 }
-
-#resource "kubernetes_secret" "wapp-api-key" {
-#  metadata {
-#    name = "wapp_api_key"
-#  }
-#
-#  data = {
-#    "key_txt" = "${file("${path.module}/.new_api_key")}"
-#  }
-#
-#  type = "kubernetes.io/wapp-api-key"
-#}
 
 resource "kubernetes_service" "web_app" {
   metadata {
