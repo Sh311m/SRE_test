@@ -12,7 +12,7 @@ resource "kubernetes_ingress" "ingress-nginx-http" {
 
     spec {
         rule {
-          host = "waaaaak.dev"
+          host = var.domain 
           http {
             path {
               path = "/"
@@ -25,7 +25,7 @@ resource "kubernetes_ingress" "ingress-nginx-http" {
         }
 
         rule {
-          host = "gr.waaaaak.dev"
+          host = "gr.${var.domain}"
           http {
             path {
               path = "/"
@@ -38,7 +38,7 @@ resource "kubernetes_ingress" "ingress-nginx-http" {
         }
 
         rule {
-          host = "prom.waaaaak.dev"
+          host = "prom.${var.domain}"
           http {
             path {
               path = "/"
@@ -51,7 +51,7 @@ resource "kubernetes_ingress" "ingress-nginx-http" {
         }
 
         rule {
-          host = "alm.waaaaak.dev"
+          host = "alm.${var.domain}"
           http {
             path {
               path = "/"
@@ -65,10 +65,10 @@ resource "kubernetes_ingress" "ingress-nginx-http" {
 
         tls {
             hosts = [
-                "waaaaak.dev",
-                "gr.waaaaak.dev",
-                "prom.waaaaak.dev",
-                "alm.waaaaak.dev"
+                "${var.domain}",
+                "gr.${var.domain}",
+                "prom.${var.domain}",
+                "alm.${var.domain}"
             ]
             secret_name = "tls-echo"
         }
