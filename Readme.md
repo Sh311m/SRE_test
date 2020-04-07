@@ -1,10 +1,10 @@
-This code will deploy:
-    * k8s cluster in GKE
-    * ingres-nginx + cert-manager (letsencrypt)
-    * HelloWorld Go web application
-    * Prometheus operator 
-    * ServiceMonitor for metrics from web application
-    * ingress-controller with routes:
+This code will deploy: 
+   * k8s cluster in GKE 
+   * ingres-nginx + cert-manager (letsencrypt) 
+   * HelloWorld Go web application 
+   * Prometheus operator  
+   * ServiceMonitor for metrics from web application 
+   * ingress-controller with routes: 
         - example.com - web application
         - gr.example.com - grafana with anonym viewer access
         - prom.example.com - prometheus UI
