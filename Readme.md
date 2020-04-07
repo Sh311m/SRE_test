@@ -1,5 +1,17 @@
+This code will deploy:
+    * k8s cluster in GKE
+    * ingres-nginx + cert-manager (letsencrypt)
+    * HelloWorld Go web application
+    * Prometheus operator 
+    * ServiceMonitor for metrics from web application
+    * ingress-controller with routes:
+        - example.com - web application
+        - gr.example.com - grafana with anonym viewer access
+        - prom.example.com - prometheus UI
+        - alm.example.com - alertmanager UI
+        
 How to use this repository:
-1. Prepare for deploy:
+1. Prepare for deployment:
     * insatll terraform
     * install helm3
     * install gcloud
@@ -16,30 +28,41 @@ How to use this repository:
     gcloud iam service-accounts create terraform
     gcloud projects add-iam-policy-binding [PROJECT_ID] --member "serviceAccount:terraform@[PROJECT_ID].iam.gserviceaccount.com" --role "roles/owner"
     gcloud iam service-accounts keys create key.json --iam-account terraform@[PROJECT_ID].iam.gserviceaccount.com
-    
-    export GOOGLE_APPLICATION_CREDENTIALS="$PWD/key.json"
+    mkdir private && cd private && export GOOGLE_APPLICATION_CREDENTIALS="$PWD/key.json"
     gsutil mb -l [REGION] gs://[BUCKET_NAME]
-    terraform init -backend-config=bucket=[BUCKET_NAME]
 ```
-3. Deploy k8s cluster in GKE (`terraform init/apply -var-file=terraform.tvars`):
+3. Deploy k8s cluster in GKE (``):
+    * run `terraform init -backend-config=bucket=[BUCKET_NAME]`
     * set all terrafrom.tvars (for gke-cluster module)
-    * use jetstack gke-cluster module
+    * `terraform init`
+    * `terraform apply -var-file=terraform.tvars`
     * manually configure NAT for k8s VPC #TODO via terraform gcp ??
-    * manually load web app to gcr.io #TODO via github actions
-4. Deploy web app service (`terraform init/apply -var-file=terraform.tvars`):
-    * add API_KEY to k8s secret from `private` directory
-    * set image name and API_KEY env for deploy
-5. Deploy ingress-nginx (`terraform init/apply`):
+    * manually upload web-app image to gcr.io (for example https://github.com/Sh311m/news-demo) #TODO via github actions 
+4. Deploy web app service:
+    * set all terrafrom.tvars (wapp_gcr and wapp_image_name)
+    * !NB API_KEY for service deploy in private dir (API_KEY of service - https://newsapi.org/)
+    * `terraform init`
+    * `terraform apply -var-file=terraform.tvars`
+5. Deploy ingress-nginx:
     * deploy ingress-nginx service via helm
-    * create namespace for cert-manager
-    * deploy cert-manager via helm
-    * deploy prod-issuer via kubectl (because terraform can't use custom k8s resources yet)
+    * `terraform init`
+    * `terraform apply`
     * manually cofigure dns records for domain and subdomains #TODO via terraform gcp `google_dns_record_set`
 6. Deploy monitoring:
-    * create monitoring namespace
-    * deploy prometheus operator via helm with values.yaml for grafana
+    * `terraform init`
+    * `terraform apply`
+    * manually apply `mon.yaml` (CRD with service monitor for wapp metrics)
 7. Deploy ingress-controller:
-    * set variables with domain and subdomains (grafana, prometheus, alert manager)
-    * deploy controller for web app and grafana (traffic routes, certs by cert-manager for all domains)
-    * deploy controller for prometheus and alert manager with basic auth (traffic routes, certs by cert-manager for all domains)
-8. Add metrics from webapp to grafana #TODO
+    * manually apply `prod-issuer.yaml` (because terraform k8s provider can't deploy CRD yet)
+    * set domain variable in `terrafrom.tvars`
+    * `terraform init`
+    * `terraform apply -var-file=terraform.tvars`
+    
+Global TODO:
+1. Deploy k8s CRDs via terraform. Possible ways:
+    * use community kubectl provider
+    * convert yaml-object in helm-charts
+    * ??
+2. Configure github-actions for web application to automatically deploy new versions
+3. Convert files in `private` directory in k8s secrets
+4. Auth for prometheus/alertmanager
